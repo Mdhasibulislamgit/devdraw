@@ -32,8 +32,8 @@ const page = () => {
   return (
     <div className="relative h-screen flex items-center justify-center">
       <div className="absolute  top-8 left-8 flex items-center space-x-2">
-        <img src="/logo.svg" alt="logo" className="w-10 h-10" />
-        <h1 className="text-white font-bold">eraser</h1>
+        <img src="/logo.png" alt="logo" className="w-10 h-10" />
+        <h1 className="text-white font-bold">DevDraw</h1>
       </div>
       <div className="flex flex-col gap-4 justify-center items-center">
         <div className="text-center w-full">

@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Archive, Delete, MoreHorizontal, Loader2 } from "lucide-react";
+import { Archive, Delete, MoreHorizontal, Loader2, File } from "lucide-react";
 import { FileListContext } from "@/app/_context/FileListContext";
 import moment from "moment";
 import {
@@ -128,7 +128,8 @@ const DashboardTable = React.forwardRef<DashboardTableRef>((_, ref) => {
                   router.push(`/workspace/${file._id}`);
                 }}
               >
-                <TableCell className="font-medium pl-8 md:pl-12 text-white/90 group-hover:text-white">
+                <TableCell className="font-medium pl-8 md:pl-12 text-white/90 group-hover:text-white flex items-center">
+                  <File size={20} className="mr-2 text-green-400" />
                   {file.fileName}
                 </TableCell>
                 <TableCell className="text-neutral-400"></TableCell>
@@ -160,7 +161,7 @@ const DashboardTable = React.forwardRef<DashboardTableRef>((_, ref) => {
                         className="cursor-pointer focus:bg-neutral-700 focus:text-white hover:bg-neutral-700 transition-colors duration-200"
                         onClick={() => handleArchive(file._id)}
                       >
-                        <Archive size={16} className="mr-2" />
+                        <Archive size={16} className="mr-2 text-green-400" />
                         Archive
                       </DropdownMenuItem>
                       <DropdownMenuItem
@@ -173,9 +174,9 @@ const DashboardTable = React.forwardRef<DashboardTableRef>((_, ref) => {
                         disabled={isDeleting}
                       >
                         {isDeleting ? (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin text-gray-100" />
                         ) : (
-                          <Delete size={16} className="mr-2" />
+                          <Delete size={16} className="mr-2 text-red-100 hover:text-gray-100" />
                         )}
                         {isDeleting ? "Deleting..." : "Delete"}
                       </DropdownMenuItem>

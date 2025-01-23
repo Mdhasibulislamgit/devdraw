@@ -14,14 +14,7 @@ const DashboardHeader = ({ user, onSearch }: { user: any; onSearch: (query: stri
       id: 1,
       name: "All",
     },
-    {
-      id: 2,
-      name: "Recent",
-    },
-    {
-      id: 3,
-      name: "Created By Me",
-    },
+    
   ];
 
   const [selected, setSelected] = useState(1);
