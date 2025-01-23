@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useRef, useState } from "react";
 import EditorJs from "@editorjs/editorjs";
 import Header from "@editorjs/header";
@@ -22,7 +23,6 @@ import LinkTool from "@editorjs/link";
 import CodeTool from "@editorjs/code";
 import Delimiter from "@editorjs/delimiter";
 import Warning from "@editorjs/warning";
-
 
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -87,7 +87,7 @@ const Editor = ({
           class: List,
           inlineToolbar: true,
           config: {
-            defaultStyle: "unordered",
+            defaultStyle: "ordered", // Default style can be 'unordered' or 'ordered'
           },
         },
         checklist: {
@@ -125,7 +125,6 @@ const Editor = ({
             messagePlaceholder: "Message",
           },
         },
-       
         underline: {
           // @ts-ignore
           class: Underline,
