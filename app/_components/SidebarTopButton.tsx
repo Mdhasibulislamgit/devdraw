@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import {
   DropdownMenu,
@@ -10,14 +10,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogOut, Plus, Settings } from "lucide-react";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
-import { useConvex } from "convex/react";
+import { useConvex, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 
 export interface Team {
-  _id: string;
+  _id: Id<"teams">;
   teamName: string;
   createdBy: string;
 }
@@ -28,6 +30,7 @@ const SidebarTopButton = ({ user, setActiveTeamInfo }: any) => {
   const [activeTeam, setActiveTeam] = useState<Team>();
   const [teamList, setTeamList] = useState<Team[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const deleteTeamMutation = useMutation(api.teams.deleteTeam);
 
   const menu = [
     {
@@ -111,18 +114,42 @@ const SidebarTopButton = ({ user, setActiveTeamInfo }: any) => {
         <div className="py-2">
           {/* Team List */}
           {teamList.map((team) => (
-            <DropdownMenuItem
-              key={team._id}
-              onClick={() => setActiveTeam(team)}
-              className={cn(
-                "cursor-pointer px-3 py-2 rounded-md text-sm transition-colors duration-200",
-                activeTeam?.teamName === team.teamName
-                  ? "bg-neutral-700 text-white"
-                  : "hover:bg-neutral-700"
-              )}
-            >
-              {team.teamName}
-            </DropdownMenuItem>
+            <div key={team._id} className="flex items-center justify-between px-3">
+              <DropdownMenuItem
+                onClick={() => setActiveTeam(team)}
+                className={cn(
+                  "flex-1 cursor-pointer py-2 rounded-md text-sm transition-colors duration-200",
+                  activeTeam?.teamName === team.teamName
+                    ? "bg-neutral-700 text-white"
+                    : "hover:bg-neutral-700"
+                )}
+              >
+                {team.teamName}
+              </DropdownMenuItem>
+              <button
+                aria-label={`Delete team ${team.teamName}`}
+                title={`Delete team ${team.teamName}`}
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  try {
+                    await deleteTeamMutation({ teamId: team._id });
+                    toast.success("Team deleted successfully");
+                    // If the deleted team was active, set active team to first in list
+                    if (activeTeam?._id === team._id) {
+                      const newTeamList = teamList.filter(t => t._id !== team._id);
+                      setActiveTeam(newTeamList[0]);
+                    }
+                    getTeamList();
+                  } catch (error) {
+                    toast.error("Error deleting team");
+                    console.error(error);
+                  }
+                }}
+                className="p-1.5 hover:bg-red-500/20 rounded-md group"
+              >
+                <Trash2 size={16} className="text-neutral-400 group-hover:text-red-500" />
+              </button>
+            </div>
           ))}
         </div>
 
