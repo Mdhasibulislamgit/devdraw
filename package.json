@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@editorjs/checklist": "^1.6.0",
+    "@editorjs/code": "^2.9.3",
+    "@editorjs/delimiter": "^1.4.2",
     "@editorjs/editorjs": "^2.30.7",
     "@editorjs/header": "^2.8.8",
     "@editorjs/inline-code": "^1.5.1",
@@ -21,6 +23,7 @@
     "@editorjs/simple-image": "^1.6.0",
     "@editorjs/table": "^2.4.3",
     "@editorjs/underline": "^1.2.1",
+    "@editorjs/warning": "^1.4.1",
     "@excalidraw/excalidraw": "^0.17.3",
     "@kinde-oss/kinde-auth-nextjs": "^2.4.6",
     "@radix-ui/react-avatar": "^1.0.4",

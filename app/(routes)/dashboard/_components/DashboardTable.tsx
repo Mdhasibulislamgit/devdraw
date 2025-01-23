@@ -62,7 +62,7 @@ const DashboardTable = React.forwardRef<DashboardTableRef>((_, ref) => {
   };
 
   React.useImperativeHandle(ref, () => ({
-    handleSearch
+    handleSearch,
   }));
 
   const archiveFile = useMutation(api.files.archiveFile);
@@ -95,22 +95,19 @@ const DashboardTable = React.forwardRef<DashboardTableRef>((_, ref) => {
 
   return (
     <div className="mt-8 px-4 md:px-8 max-w-7xl mx-auto overflow-x-auto">
-      <Table className="border border-gray-700 bg-neutral-900/50 rounded-lg overflow-hidden min-w-[600px]">
+      <Table className="border border-gray-700 bg-neutral-900/70 rounded-lg overflow-hidden shadow-md min-w-[600px]">
         <TableHeader>
-          <TableRow className="border-neutral-700 hover:bg-transparent">
-            <TableHead className="pl-8 md:pl-12 w-[300px] text-neutral-300 font-semibold">
-              Name
+          <TableRow className="bg-neutral-800/90">
+            <TableHead className="pl-6 md:pl-10 text-left text-sm text-gray-300 font-semibold">
+              File Name
             </TableHead>
-            <TableHead className="text-neutral-300 font-semibold">
-              Location
-            </TableHead>
-            <TableHead className="text-neutral-300 font-semibold">
+            <TableHead className="text-left text-sm text-gray-300 font-semibold">
               Author
             </TableHead>
-            <TableHead className="pr-4 w-[120px] text-neutral-300 font-semibold">
+            <TableHead className="text-left text-sm text-gray-300 font-semibold">
               Created
             </TableHead>
-            <TableHead className="pr-4 w-[50px] text-neutral-300 font-semibold">
+            <TableHead className="text-right pr-16 text-sm text-gray-300 font-semibold">
               Actions
             </TableHead>
           </TableRow>
@@ -120,52 +117,58 @@ const DashboardTable = React.forwardRef<DashboardTableRef>((_, ref) => {
             filteredFiles.map((file, index) => (
               <TableRow
                 key={file._id}
-                className={`group hover:bg-white/5 cursor-pointer border-neutral-700 transition-colors duration-200 ${
-                  index % 2 === 0 ? "bg-neutral-900/50" : "bg-neutral-800/50"
+                className={`group cursor-pointer hover:bg-neutral-800/80 border-b border-gray-700 transition-colors ${
+                  index % 2 === 0 ? "bg-neutral-900" : "bg-neutral-800"
                 }`}
                 onClick={(e) => {
                   e.stopPropagation();
                   router.push(`/workspace/${file._id}`);
                 }}
               >
-                <TableCell className="font-medium pl-8 md:pl-12 text-white/90 group-hover:text-white flex items-center">
-                  <File size={20} className="mr-2 text-green-400" />
+                <TableCell className="pl-6 md:pl-10 py-4 text-gray-200 font-medium flex items-center">
+                  <File size={20} className="mr-2 text-green-500" />
                   {file.fileName}
                 </TableCell>
-                <TableCell className="text-neutral-400"></TableCell>
-                <TableCell className="w-[150px]">
+                <TableCell className="py-4 text-sm text-gray-400">
                   <div className="flex items-center gap-2">
                     <img
                       src={
                         user?.picture ??
                         "https://img.freepik.com/free-vector/graphic-designer-man_78370-159.jpg?size=626&ext=jpg&ga=GA1.1.1395880969.1709251200&semt=ais"
                       }
-                      alt="logo"
-                      className="w-8 h-8 rounded-full object-cover cursor-pointer ring-2 ring-neutral-700"
+                      alt="user"
+                      className="w-8 h-8 rounded-full object-cover border border-gray-600"
                     />
-                    <span className="text-sm text-neutral-400">You</span>
+                    <span>You</span>
                   </div>
                 </TableCell>
-                <TableCell className="w-[150px] text-sm text-neutral-400">
+                <TableCell className="py-4 text-sm text-gray-400">
                   {moment(file._creationTime).format("DD MMM YYYY")}
                 </TableCell>
-                <TableCell className="pr-2">
+                <TableCell className="py-4 pr-8 text-right ">
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild className="outline-none">
-                      <div className="p-1 hover:bg-neutral-600 w-fit rounded-sm cursor-pointer">
-                        <MoreHorizontal size={16} />
-                      </div>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className="p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full transition-colors shadow-md focus:outline-none mr-8"
+                        aria-label="Actions"
+                      >
+                        <MoreHorizontal size={18} className="text-gray-300" />
+                      </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-neutral-800/95 backdrop-blur-sm gap-1 rounded-lg text-white border-neutral-700 w-48 ml-4 mt-2 shadow-xl animate-in fade-in-0 zoom-in-95">
+                    <DropdownMenuContent className="bg-neutral-800 text-gray-200 rounded-lg shadow-lg border border-gray-700 w-40">
                       <DropdownMenuItem
-                        className="cursor-pointer focus:bg-neutral-700 focus:text-white hover:bg-neutral-700 transition-colors duration-200"
+                        className="flex items-center gap-2 p-3 hover:bg-green-600 hover:text-white rounded-md transition-colors"
                         onClick={() => handleArchive(file._id)}
                       >
-                        <Archive size={16} className="mr-2 text-green-400" />
-                        Archive
+                        <Archive size={16} className="text-green-400" />
+                        <span>Archive</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        className="cursor-pointer focus:bg-red-500/90 focus:text-white hover:bg-red-500/90 hover:text-white transition-colors duration-200"
+                        className={`flex items-center gap-2 p-3 rounded-md transition-colors ${
+                          isDeleting
+                            ? "cursor-not-allowed bg-red-500/70 text-white"
+                            : "hover:bg-red-600 hover:text-white"
+                        }`}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -174,11 +177,11 @@ const DashboardTable = React.forwardRef<DashboardTableRef>((_, ref) => {
                         disabled={isDeleting}
                       >
                         {isDeleting ? (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin text-gray-100" />
+                          <Loader2 className="h-4 w-4 animate-spin text-gray-200" />
                         ) : (
-                          <Delete size={16} className="mr-2 text-red-100 hover:text-gray-100" />
+                          <Delete size={16} className="text-red-400" />
                         )}
-                        {isDeleting ? "Deleting..." : "Delete"}
+                        <span>{isDeleting ? "Deleting..." : "Delete"}</span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -187,7 +190,7 @@ const DashboardTable = React.forwardRef<DashboardTableRef>((_, ref) => {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={5} className="text-center py-8 text-neutral-400">
+              <TableCell colSpan={4} className="py-8 text-center text-gray-400">
                 No files found. Start by uploading a new file!
               </TableCell>
             </TableRow>

@@ -18,25 +18,16 @@ import InlineCode from "@editorjs/inline-code";
 import Quote from "@editorjs/quote";
 // @ts-ignore
 import LinkTool from "@editorjs/link";
+// Additional Plugins
+import CodeTool from "@editorjs/code";
+import Delimiter from "@editorjs/delimiter";
+import Warning from "@editorjs/warning";
+
+
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
 import { FILE } from "../../dashboard/_components/DashboardTable";
-
-const rawDocument = {
-  time: 1550476186479,
-  blocks: [
-    {
-      id: "oUq2g_tl8y",
-      type: "header",
-      data: {
-        text: "Untitled Document",
-        level: 2,
-      },
-    },
-  ],
-  version: "2.8.1",
-};
 
 const Editor = ({
   onSaveTrigger,
@@ -52,7 +43,7 @@ const Editor = ({
   onChange?: (data: any) => void;
 }) => {
   const ref = useRef<EditorJs>();
-  const [document, setDocument] = useState(rawDocument);
+  const [document, setDocument] = useState("");
 
   const updateDocument = useMutation(api.files.updateDocument);
 
@@ -113,6 +104,28 @@ const Editor = ({
             cols: 3,
           },
         },
+        // New plugins added here
+        code: {
+          // @ts-ignore
+          class: CodeTool,
+          config: {
+            placeholder: "Enter your code...",
+          },
+        },
+        delimiter: {
+          // @ts-ignore
+          class: Delimiter,
+        },
+        warning: {
+          // @ts-ignore
+          class: Warning,
+          inlineToolbar: true,
+          config: {
+            titlePlaceholder: "Title",
+            messagePlaceholder: "Message",
+          },
+        },
+       
         underline: {
           // @ts-ignore
           class: Underline,
@@ -166,15 +179,16 @@ const Editor = ({
   };
 
   return (
-    <div className="bg-black min-h-screen p-1 flex justify-center items-center">
+    <div className="bg-black min-h-screen p-3 flex justify-center items-center">
       {/* Paper Container */}
       <div className="bg-zinc-900 w-[8.5in] h-[11in] shadow-xl rounded-lg p-8 overflow-y-auto border border-gray-700 relative">
         {/* Add selection styles */}
         <div
           className="
-            prose prose-invert prose-lg w-full h-full text-gray-300
-            selection:bg-blue-700 selection:text-white
-          "
+    prose prose-invert ml-7 mr-1 prose-lg w-full h-full text-gray-300
+    selection:bg-gray-600 selection:text-white
+    break-words whitespace-normal overflow-wrap-break-word
+  "
           id={holderId}
           key={holderId}
         ></div>
