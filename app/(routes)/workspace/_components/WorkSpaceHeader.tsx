@@ -15,9 +15,10 @@ import {
   Link2,
   MoreHorizontal,
   Save,
+  Menu,
 } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -33,109 +34,201 @@ const WorkSpaceHeader = ({
   onSave,
   file,
 }: any) => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
-    <div className="border-b border-neutral-800 h-12 flex items-center px-4 w-full">
-      {/* File name portion */}
-      <div className="flex space-x-2 items-center justify-start w-full">
-        <Link href="/dashboard" className="flex space-x-2 items-center">
-          <img src="/logo.png" alt="logo" className="w-16 h-16" />
-          <div>
-            <h1 className="text-sm font-medium">
-              {file ? file.fileName : "Untitled"}
-            </h1>
-          </div>
-        </Link>
-        <DropdownMenu>
-          <DropdownMenuTrigger className="rounded-sm hover:bg-neutral-700 outline-none hover:text-white cursor-pointer p-1">
-            <MoreHorizontal size={16} />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-neutral-800 ml-8 text-white border-neutral-600">
-            <DropdownMenuItem className="cursor-pointer text-xs focus:bg-neutral-700 focus:text-white">
-              <Archive size={16} className="mr-2" />
-              Move to Archive
-            </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer focus:bg-neutral-700 focus:text-white">
-              <Link className="flex items-center text-xs" href="/dashboard">
-                <LayoutDashboard size={16} className="mr-2" />
-                Go To Dashboard
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+    <div className="border-b border-neutral-800 bg-neutral-900 h-auto md:h-16 flex flex-col md:flex-row items-center px-4 md:px-8 py-2 w-full">
+      {/* Mobile: First Line - Logo, Filename, 3-dot Menu, Save Button */}
+      <div className="flex items-center justify-between w-full md:w-auto">
+        <div className="flex space-x-3 items-center">
+          <Link href="/dashboard" className="flex space-x-2 items-center">
+            <img
+              src="/logo.png"
+              alt="logo"
+              className="w-10 h-10 md:w-12 md:h-12 rounded-lg border border-neutral-700"
+            />
+            <div>
+              <h1 className="text-lg font-semibold text-neutral-100">
+                {file ? file.fileName : "Untitled"}
+              </h1>
+            </div>
+          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="rounded-lg hover:bg-neutral-800 outline-none hover:text-neutral-100 cursor-pointer p-2 transition-colors">
+              <MoreHorizontal size={18} className="text-neutral-400" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-neutral-800 border border-neutral-700 shadow-lg rounded-lg w-48">
+              <DropdownMenuItem className="cursor-pointer text-sm text-neutral-200 hover:bg-neutral-700 focus:bg-neutral-700">
+                <Archive size={16} className="mr-2 text-neutral-400" />
+                Move to Archive
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer text-sm text-neutral-200 hover:bg-neutral-700 focus:bg-neutral-700">
+                <Link className="flex items-center" href="/dashboard">
+                  <LayoutDashboard
+                    size={16}
+                    className="mr-2 text-neutral-400"
+                  />
+                  Go To Dashboard
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        {/* Mobile: Save Button */}
+        <div
+          onClick={() => onSave()}
+          className="rounded-lg flex text-sm items-center bg-green-600 hover:bg-green-700 text-white cursor-pointer px-3 py-1.5 transition-colors md:hidden"
+        >
+          <Save size={16} className="mr-2" />
+          Save
+        </div>
+
+        {/* Mobile: Hamburger Menu for Additional Actions */}
+        <div className="md:hidden">
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="rounded-lg hover:bg-neutral-800 outline-none hover:text-neutral-100 cursor-pointer p-2 transition-colors"
+            >
+              <Menu size={18} className="text-neutral-400" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-neutral-800 border border-neutral-700 shadow-lg rounded-lg w-48">
+              <DropdownMenuItem className="cursor-pointer text-sm text-neutral-200 hover:bg-neutral-700 focus:bg-neutral-700">
+                <Coffee size={16} className="mr-2 text-neutral-400" />
+                Buy me a coffee
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    `${window.location.origin}/workspace/${file._id}`
+                  );
+                  toast.success("Link Copied");
+                }}
+                className="cursor-pointer text-sm text-neutral-200 hover:bg-neutral-700 focus:bg-neutral-700"
+              >
+                <Link2 size={16} className="mr-2 text-neutral-400" />
+                Share
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer text-sm text-neutral-200 hover:bg-neutral-700 focus:bg-neutral-700">
+                <Info size={16} className="mr-2 text-neutral-400" />
+                Info
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex items-center">
-        <div className="border border-neutral-600 rounded">
-          <div className="flex w-full items-center">
+      {/* Mobile: Second Line - Tabs */}
+      <div className="flex items-center mt-3 w-full md:hidden">
+        <div className="bg-neutral-800 rounded-xl p-1.5 w-full">
+          <div className="flex items-center justify-between space-x-1">
             {Tabs.map((tab: any) => (
               <div
                 key={tab.name}
                 onClick={() => setActiveTab(tab.name)}
                 className={cn(
-                  "cursor-pointer w-24 text-sm text-center hover:bg-neutral-700 px-2 py-1",
+                  "cursor-pointer flex-1 text-sm text-center px-4 py-2 rounded-lg transition-colors",
                   {
-                    "bg-neutral-700 text-white": tab.name === activeTab,
+                    "bg-neutral-700 text-neutral-100 font-medium shadow-inner":
+                      tab.name === activeTab,
                   },
                   {
-                    "border-r border-neutral-500":
-                      tab.name !== Tabs[Tabs.length - 1].name,
+                    "text-neutral-400 hover:bg-neutral-700 hover:text-neutral-100":
+                      tab.name !== activeTab,
                   }
                 )}
               >
-                <h1 className="text-sm font-medium">{tab.name}</h1>
+                <h1>{tab.name}</h1>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Right most */}
-      <div className="w-full space-x-4 flex items-center justify-end">
-        <a
-          href="#"
-          target="_blank"
-          rel="noreferrer noopener"
-          className="rounded-sm flex text-sm items-center border border-neutral-700 hover:border-neutral-500 transition-all hover:bg-neutral-800 hover:text-white cursor-pointer px-2 py-1"
-        >
-          Buy me a coffee
-          <Coffee size={16} className="ml-2" />
-        </a>
-        <div
-          onClick={() => onSave()}
-          className="rounded-sm flex text-sm items-center bg-red-500 hover:bg-green-600 hover:text-white cursor-pointer px-2 py-1"
-        >  Save
-          <Save size={20} className="ml-2"  />
-        </div>
-        <div
-          onClick={() => {
-            navigator.clipboard.writeText(
-              `${window.location.origin}/workspace/${file._id}`
-            );
-            toast.success("Link Copied");
-          }}
-          className="rounded-sm flex text-sm items-center bg-blue-700 hover:bg-blue-800 hover:text-white cursor-pointer px-2 py-1"
-        >
-          Share
-          <Link2 size={16} className="ml-2" />
-        </div>
-        <Popover>
-          <PopoverTrigger asChild>
-            <div className="rounded-sm hover:bg-neutral-700 hover:text-white cursor-pointer p-1">
-              <Info size={16} />
+      {/* Desktop: Divide into Three Sections */}
+      <div className="hidden md:flex w-full justify-between items-center">
+        {/* Left Section */}
+        {/* <div className="flex items-center space-x-3">
+          <a
+            href="#"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="rounded-lg flex text-sm items-center bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-neutral-100 cursor-pointer px-4 py-2.5 transition-colors"
+          >
+            <Coffee size={16} className="mr-2" />
+            Buy me a coffee
+          </a>
+        </div> */}
+
+        {/* Middle Section - Tabs */}
+        <div className="flex items-center mx-auto flex-grow justify-center max-w-2xl w-full">
+          <div className="bg-neutral-800 rounded-xl p-1.5 w-full">
+            <div className="flex items-center justify-between space-x-1">
+              {Tabs.map((tab: any) => (
+                <div
+                  key={tab.name}
+                  onClick={() => setActiveTab(tab.name)}
+                  className={cn(
+                    "cursor-pointer flex-1 text-sm text-center px-6 py-2.5 rounded-lg transition-colors",
+                    {
+                      "bg-neutral-700 text-neutral-100 font-medium shadow-inner":
+                        tab.name === activeTab,
+                    },
+                    {
+                      "text-neutral-400 hover:bg-neutral-700 hover:text-neutral-100":
+                        tab.name !== activeTab,
+                    }
+                  )}
+                >
+                  <h1>{tab.name}</h1>
+                </div>
+              ))}
             </div>
-          </PopoverTrigger>
-          <PopoverContent className="w-80 bg-neutral-800 text-white border-neutral-700">
-            <div className="grid gap-4">
-              <div className="space-y-2">
-                <h1 className="text-sm font-semibold">Info</h1>
-                <p className="text-xs text-neutral-400">
-                  Dont forget to save or you loss you assets
-                </p>
+          </div>
+        </div>
+
+        {/* Right Section */}
+        <div className="flex space-x-3 items-center">
+          <div
+            onClick={() => onSave()}
+            className="rounded-lg flex text-sm items-center bg-green-600 hover:bg-green-700 text-white cursor-pointer px-4 py-2.5 transition-colors"
+          >
+            <Save size={16} className="mr-2" />
+            Save
+          </div>
+          <div
+            onClick={() => {
+              navigator.clipboard.writeText(
+                `${window.location.origin}/workspace/${file._id}`
+              );
+              toast.success("Link Copied");
+            }}
+            className="rounded-lg flex text-sm items-center bg-blue-600 hover:bg-blue-700 text-white cursor-pointer px-4 py-2.5 transition-colors"
+          >
+            <Link2 size={16} className="mr-2" />
+            Share
+          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <div className="rounded-lg hover:bg-neutral-800 text-red-700 hover:text-neutral-100 cursor-pointer p-1 transition-colors">
+                <Info size={25} />
               </div>
-            </div>
-          </PopoverContent>
-        </Popover>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 bg-neutral-800 border border-neutral-700 shadow-lg rounded-lg">
+              <div className="grid gap-4">
+                <div className="space-y-2">
+                  <h1 className="text-sm font-semibold text-neutral-100">
+                    Info
+                  </h1>
+                  <p className="text-md text-red-600">
+                    Don't forget to save, or you may lose your assets.
+                  </p>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
     </div>
   );
