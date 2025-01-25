@@ -180,13 +180,17 @@ const Editor = ({
   return (
     <div className="bg-black min-h-screen p-3 flex justify-center items-center">
       {/* Paper Container */}
-      <div className="bg-zinc-900 w-[8.5in] h-[11in] shadow-xl rounded-lg p-8 overflow-y-auto border border-gray-700 relative">
+      <div
+        className="bg-zinc-900 w-[8.5in] h-[calc(100vh-2rem)] shadow-xl rounded-lg p-8 overflow-y-auto border border-gray-700 relative"
+        style={{ maxHeight: "calc(100vh - 2rem)" }} // Ensure it doesn't exceed screen height
+      >
         {/* Add selection styles */}
         <div
           className="
     prose prose-invert ml-7 mr-1 prose-lg w-full h-full text-gray-300
     selection:bg-gray-600 selection:text-white
     break-words whitespace-normal overflow-wrap-break-word
+    pb-24 // Add extra padding at the bottom
   "
           id={holderId}
           key={holderId}

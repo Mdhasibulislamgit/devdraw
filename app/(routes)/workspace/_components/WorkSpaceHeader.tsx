@@ -45,10 +45,10 @@ const WorkSpaceHeader = ({
             <img
               src="/logo.png"
               alt="logo"
-              className="w-10 h-10 md:w-12 md:h-12 rounded-lg border border-neutral-700"
+              className="w-15 h-15 md:w-12 md:h-12 rounded-lg border border-neutral-700"
             />
             <div>
-              <h1 className="text-lg font-semibold text-neutral-100">
+              <h1 className="text-xs font-semibold text-neutral-100">
                 {file ? file.fileName : "Untitled"}
               </h1>
             </div>
@@ -222,7 +222,7 @@ const WorkSpaceHeader = ({
                     Info
                   </h1>
                   <p className="text-md text-red-600">
-                    Don't forget to save, or you may lose your assets.
+                    Don't forget to save, or you may lose your assets. also sometime you may not see canvas design in both, then go to full canvas tab and come back into both section.
                   </p>
                 </div>
               </div>
