@@ -1,200 +1,214 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import EditorJs from "@editorjs/editorjs";
+import EditorJs, {
+  OutputData,
+  ToolConstructable,
+  BlockToolConstructable,
+} from "@editorjs/editorjs";
 import Header from "@editorjs/header";
-// @ts-ignore
 import List from "@editorjs/list";
-// @ts-ignore
-import checkList from "@editorjs/checklist";
-// @ts-ignore
+import CheckList from "@editorjs/checklist";
 import Table from "@editorjs/table";
-// @ts-ignore
 import Underline from "@editorjs/underline";
-// @ts-ignore
 import Marker from "@editorjs/marker";
-// @ts-ignore
 import InlineCode from "@editorjs/inline-code";
-// @ts-ignore
 import Quote from "@editorjs/quote";
-// @ts-ignore
 import LinkTool from "@editorjs/link";
-// Additional Plugins
 import CodeTool from "@editorjs/code";
 import Delimiter from "@editorjs/delimiter";
 import Warning from "@editorjs/warning";
-
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
 import { FILE } from "../../dashboard/_components/DashboardTable";
 
-const Editor = ({
+interface EditorProps {
+  onSaveTrigger: boolean;
+  fileId: string;
+  fileData: FILE;
+  holderId: string;
+  onChange?: (data: OutputData) => void;
+}
+
+const Editor: React.FC<EditorProps> = ({
   onSaveTrigger,
   fileId,
   fileData,
   holderId,
   onChange,
-}: {
-  onSaveTrigger: any;
-  fileId: any;
-  fileData: FILE;
-  holderId: string;
-  onChange?: (data: any) => void;
 }) => {
-  const ref = useRef<EditorJs>();
-  const [document, setDocument] = useState("");
+  const editorRef = useRef<EditorJs | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const updateDocument = useMutation(api.files.updateDocument);
 
+  // Initialize the editor when fileData is available and the editor isn't initialized yet.
   useEffect(() => {
-    fileData && initEditor();
-  }, [fileData]);
+    if (fileData && !isInitialized) {
+      initEditor();
+      setIsInitialized(true);
+    }
 
+    return () => {
+      if (editorRef.current) {
+        editorRef.current.destroy();
+        editorRef.current = null;
+      }
+    };
+  }, [fileData, holderId, isInitialized]);
+
+  // Save the document when onSaveTrigger is true.
   useEffect(() => {
-    console.log("triggered" + onSaveTrigger);
-    onDocumentSave();
+    if (onSaveTrigger && editorRef.current) {
+      onDocumentSave();
+    }
   }, [onSaveTrigger]);
 
-  const initEditor = () => {
-    const editor = new EditorJs({
-      holder: holderId,
-      placeholder: "Start typing here...",
-      autofocus: true,
-      inlineToolbar: true,
-      defaultBlock: "paragraph",
-      minHeight: 150,
-      onChange: async () => {
-        if (ref.current && onChange) {
-          const data = await ref.current.save();
-          onChange(data);
-        }
-      },
-      tools: {
-        header: {
-          // @ts-ignore
-          class: Header,
-          inlineToolbar: true,
-          shortcut: "CMD+SHIFT+H",
-          config: {
-            levels: [1, 2, 3, 4, 5, 6],
-            defaultLevel: 2,
+  /**
+   * Initializes the Editor.js instance.
+   */
+  const initEditor = async () => {
+    try {
+      const editor = new EditorJs({
+        holder: holderId,
+        placeholder: "Start typing your masterpiece...",
+        autofocus: true,
+        inlineToolbar: true,
+        defaultBlock: "paragraph",
+        minHeight: 150,
+        onReady: () => {
+          editorRef.current = editor;
+        },
+        onChange: async () => {
+          if (editorRef.current && onChange) {
+            try {
+              const data = await editorRef.current.save();
+              onChange(data);
+            } catch (error) {
+              console.error("Error in onChange:", error);
+            }
+          }
+        },
+        tools: {
+          header: {
+            class: Header as unknown as BlockToolConstructable,
+            inlineToolbar: true,
+            shortcut: "CMD+SHIFT+H",
+            config: {
+              levels: [1, 2, 3, 4, 5, 6],
+              defaultLevel: 2,
+            },
           },
-          placeholder: "Add a heading...",
-        },
-        list: {
-          // @ts-ignore
-          class: List,
-          inlineToolbar: true,
-          config: {
-            defaultStyle: "ordered", // Default style can be 'unordered' or 'ordered'
+          list: {
+            class: List as unknown as BlockToolConstructable,
+            inlineToolbar: true,
           },
-        },
-        checklist: {
-          // @ts-ignore
-          class: checkList,
-          inlineToolbar: true,
-        },
-        table: {
-          // @ts-ignore
-          class: Table,
-          inlineToolbar: true,
-          config: {
-            rows: 2,
-            cols: 3,
+          checklist: {
+            class: CheckList as unknown as BlockToolConstructable,
+            inlineToolbar: true,
           },
-        },
-        // New plugins added here
-        code: {
-          // @ts-ignore
-          class: CodeTool,
-          config: {
-            placeholder: "Enter your code...",
+          table: {
+            class: Table as unknown as BlockToolConstructable,
+            inlineToolbar: true,
           },
-        },
-        delimiter: {
-          // @ts-ignore
-          class: Delimiter,
-        },
-        warning: {
-          // @ts-ignore
-          class: Warning,
-          inlineToolbar: true,
-          config: {
-            titlePlaceholder: "Title",
-            messagePlaceholder: "Message",
+          code: {
+            class: CodeTool as unknown as BlockToolConstructable,
           },
-        },
-        underline: {
-          // @ts-ignore
-          class: Underline,
-          shortcut: "CMD+U",
-        },
-        marker: {
-          // @ts-ignore
-          class: Marker,
-          shortcut: "CMD+M",
-        },
-        inlineCode: {
-          // @ts-ignore
-          class: InlineCode,
-          shortcut: "CMD+E",
-        },
-        quote: {
-          // @ts-ignore
-          class: Quote,
-          inlineToolbar: true,
-          shortcut: "CMD+SHIFT+Q",
-          config: {
-            quotePlaceholder: "Enter a quote...",
-            captionPlaceholder: "Author",
+          delimiter: {
+            class: Delimiter as unknown as BlockToolConstructable,
+          },
+          warning: {
+            class: Warning as unknown as BlockToolConstructable,
+            inlineToolbar: true,
+          },
+          underline: {
+            class: Underline as unknown as ToolConstructable,
+            shortcut: "CMD+U",
+          },
+          marker: {
+            class: Marker as unknown as ToolConstructable,
+            shortcut: "CMD+M",
+          },
+          inlineCode: {
+            class: InlineCode as unknown as ToolConstructable,
+            shortcut: "CMD+E",
+          },
+          quote: {
+            class: Quote as unknown as BlockToolConstructable,
+            inlineToolbar: true,
+          },
+          linkTool: {
+            class: LinkTool as unknown as BlockToolConstructable,
+            config: { endpoint: "/api/fetchUrl" },
           },
         },
-        linkTool: {
-          // @ts-ignore
-          class: LinkTool,
-          config: {
-            endpoint: "/api/fetchUrl",
-          },
-        },
-      },
-      data: fileData.document ? JSON.parse(fileData.document) : document,
-    });
-    editor.isReady.then(() => {
-      ref.current = editor;
-    });
+        data: fileData.document ? JSON.parse(fileData.document) : undefined,
+      });
+    } catch (error) {
+      console.error("Editor initialization failed:", error);
+      toast.error("Failed to initialize editor");
+    }
   };
 
   const onDocumentSave = async () => {
-    if (ref.current) {
-      const savedData = await ref.current.save();
-      const resp = await updateDocument({
-        _id: fileId,
+    if (!editorRef.current) return;
+
+    try {
+      const savedData = await editorRef.current.save();
+      await updateDocument({
+        _id: fileId as any, // Cast to any since we don't have a proper Convex schema
         document: JSON.stringify(savedData),
       });
 
-      toast.success("Document Saved!");
+      toast.success("Document Saved!", {
+        style: { background: "#22c55e", color: "white" },
+      });
+    } catch (error) {
+      console.error("Save failed:", error);
+      toast.error("Failed to save document", {
+        style: { background: "#ef4444", color: "white" },
+      });
     }
   };
 
   return (
-    <div className="bg-black min-h-screen p-3 flex justify-center items-center">
-      {/* Paper Container */}
-      <div
-        className="bg-zinc-900 w-[8.5in] h-[calc(100vh-2rem)] shadow-xl rounded-lg p-8 overflow-y-auto border border-gray-700 relative"
-        style={{ maxHeight: "calc(100vh - 2rem)" }} // Ensure it doesn't exceed screen height
-      >
-        {/* Add selection styles */}
-        <div
-          className="
-    prose prose-invert ml-7 mr-1 prose-lg w-full h-full text-gray-300
-    selection:bg-gray-600 selection:text-white
-    break-words whitespace-normal overflow-wrap-break-word
-    pb-24 // Add extra padding at the bottom
-  "
-          id={holderId}
-          key={holderId}
-        ></div>
+    <div className="min-h-screen  bg-gradient-to-br from-gray-900 to-black px-1 py-1 flex items-center justify-center">
+      <div className="w-full  flex flex-col">
+        {/* Editor Container */}
+        <div className="relative flex-1 bg-white/5 backdrop-blur-xl rounded-xl shadow-2xl border border-gray-800/50 overflow-hidden">
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent pointer-events-none" />
+
+          {/* Toolbar */}
+          <div className="px-8 py-4 border-b border-gray-800/50 bg-gray-900/30">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
+              </div>
+              
+            </div>
+          </div>
+
+          {/* Editor Content Area */}
+          <div
+            id={holderId}
+            key={holderId}
+            className="
+              pl-12 py-1 
+              text-gray-200
+              h-[calc(100vh)]
+              overflow-y-auto
+              scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900
+              selection:bg-blue-500/30 selection:text-white
+              break-words whitespace-normal overflow-wrap-break-word
+            "
+          />
+
+          
+        </div>
       </div>
     </div>
   );

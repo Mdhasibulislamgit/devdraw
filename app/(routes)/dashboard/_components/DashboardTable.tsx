@@ -94,20 +94,20 @@ const DashboardTable = React.forwardRef<DashboardTableRef>((_, ref) => {
   };
 
   return (
-    <div className="mt-8 px-4 md:px-8 max-w-7xl mx-auto overflow-x-auto">
-      <Table className="border border-gray-700 bg-neutral-900/70 rounded-lg overflow-hidden shadow-md min-w-[600px]">
+    <div className="mt-4 sm:mt-8 px-2 sm:px-4 md:px-8 max-w-7xl mx-auto overflow-x-auto">
+      <Table className="border border-gray-700 bg-neutral-900/70 rounded-lg overflow-hidden shadow-md w-full min-w-[320px]">
         <TableHeader>
           <TableRow className="bg-neutral-800/90">
-            <TableHead className="pl-6 md:pl-10 text-left text-sm text-gray-300 font-semibold">
+            <TableHead className="pl-3 sm:pl-6 md:pl-10 text-left text-xs sm:text-sm text-gray-300 font-semibold">
               File Name
             </TableHead>
-            <TableHead className="text-left text-sm text-gray-300 font-semibold">
+            <TableHead className="hidden sm:table-cell text-left text-xs sm:text-sm text-gray-300 font-semibold">
               Author
             </TableHead>
-            <TableHead className="text-left text-sm text-gray-300 font-semibold">
+            <TableHead className="hidden sm:table-cell text-left text-xs sm:text-sm text-gray-300 font-semibold">
               Created
             </TableHead>
-            <TableHead className="text-right pr-16 text-sm text-gray-300 font-semibold">
+            <TableHead className="text-right pr-4 sm:pr-16 text-xs sm:text-sm text-gray-300 font-semibold">
               Actions
             </TableHead>
           </TableRow>
@@ -125,11 +125,11 @@ const DashboardTable = React.forwardRef<DashboardTableRef>((_, ref) => {
                   router.push(`/workspace/${file._id}`);
                 }}
               >
-                <TableCell className="pl-6 md:pl-10 py-4 text-gray-200 font-medium flex items-center">
-                  <File size={20} className="mr-2 text-green-500" />
-                  {file.fileName}
+                <TableCell className="pl-3 sm:pl-6 md:pl-10 py-3 sm:py-4 text-gray-200 font-medium flex items-center">
+                  <File size={18} className="mr-2 text-green-500 flex-shrink-0" />
+                  <span className="truncate">{file.fileName}</span>
                 </TableCell>
-                <TableCell className="py-4 text-sm text-gray-400">
+                <TableCell className="hidden sm:table-cell py-3 sm:py-4 text-xs sm:text-sm text-gray-400">
                   <div className="flex items-center gap-2">
                     <img
                       src={
@@ -137,34 +137,34 @@ const DashboardTable = React.forwardRef<DashboardTableRef>((_, ref) => {
                         "https://img.freepik.com/free-vector/graphic-designer-man_78370-159.jpg?size=626&ext=jpg&ga=GA1.1.1395880969.1709251200&semt=ais"
                       }
                       alt="user"
-                      className="w-8 h-8 rounded-full object-cover border border-gray-600"
+                      className="w-6 sm:w-8 h-6 sm:h-8 rounded-full object-cover border border-gray-600"
                     />
                     <span>You</span>
                   </div>
                 </TableCell>
-                <TableCell className="py-4 text-sm text-gray-400">
+                <TableCell className="hidden sm:table-cell py-3 sm:py-4 text-xs sm:text-sm text-gray-400">
                   {moment(file._creationTime).format("DD MMM YYYY")}
                 </TableCell>
-                <TableCell className="py-4 pr-8 text-right ">
+                <TableCell className="py-3 sm:py-4 pr-2 sm:pr-8 text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className="p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full transition-colors shadow-md focus:outline-none mr-8"
+                        className="p-1.5 sm:p-2 bg-neutral-700 hover:bg-neutral-600 rounded-full transition-colors shadow-md focus:outline-none mr-2 sm:mr-8"
                         aria-label="Actions"
                       >
-                        <MoreHorizontal size={18} className="text-gray-300" />
+                        <MoreHorizontal size={16} className="text-gray-300 sm:size-[18px]" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-neutral-800 text-gray-200 rounded-lg shadow-lg border border-gray-700 w-40">
+                    <DropdownMenuContent className="bg-neutral-800 text-gray-200 rounded-lg shadow-lg border border-gray-700 w-36 sm:w-40">
                       <DropdownMenuItem
-                        className="flex items-center gap-2 p-3 hover:bg-green-600 hover:text-white rounded-md transition-colors"
+                        className="flex items-center gap-2 py-2.5 sm:p-3 px-3 hover:bg-green-600 hover:text-white rounded-md transition-colors"
                         onClick={() => handleArchive(file._id)}
                       >
-                        <Archive size={16} className="text-green-400" />
-                        <span>Archive</span>
+                        <Archive size={14} className="text-green-400 sm:size-4" />
+                        <span className="text-sm">Archive</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        className={`flex items-center gap-2 p-3 rounded-md transition-colors ${
+                        className={`flex items-center gap-2 py-2.5 sm:p-3 px-3 rounded-md transition-colors ${
                           isDeleting
                             ? "cursor-not-allowed bg-red-500/70 text-white"
                             : "hover:bg-red-600 hover:text-white"
@@ -179,9 +179,9 @@ const DashboardTable = React.forwardRef<DashboardTableRef>((_, ref) => {
                         {isDeleting ? (
                           <Loader2 className="h-4 w-4 animate-spin text-gray-200" />
                         ) : (
-                          <Delete size={16} className="text-red-400" />
+                          <Delete size={14} className="text-red-400 sm:size-4" />
                         )}
-                        <span>{isDeleting ? "Deleting..." : "Delete"}</span>
+                        <span className="text-sm">{isDeleting ? "Deleting..." : "Delete"}</span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
