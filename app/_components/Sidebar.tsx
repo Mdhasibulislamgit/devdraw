@@ -10,7 +10,15 @@ import { useConvex, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
 import { FileListContext } from "../_context/FileListContext";
-const Sidebar = () => {
+import { X } from "lucide-react";
+
+
+interface SidebarProps {
+  isSidebarOpen: boolean;
+  toggleSidebar: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
   const { user } = useKindeBrowserClient();
   const createFile = useMutation(api.files.createNewFile);
 
@@ -66,10 +74,26 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="text-white h-screen hidden sm:fixed max-w-64 py-4 px-4 sm:flex border-r border-neutral-800 flex-col">
-      <div className="flex-1">
+    <div
+      className={`text-white h-screen fixed sm:relative z-50 bg-neutral-900 ${
+        isSidebarOpen ? "w-64 px-4" : "w-0 px-0" // Combine width and padding toggle
+      } sm:w-64 sm:px-4 py-4 flex border-r border-neutral-800 flex-col transition-all duration-300 ease-in-out overflow-hidden sm:overflow-visible`} // Allow overflow on sm screens
+    >
+      {/* Close button for mobile */}
+      <button
+        onClick={toggleSidebar}
+        className="absolute top-4 right-4 sm:hidden p-1 rounded hover:bg-neutral-700"
+        aria-label="Close sidebar"
+      >
+        < X size={20} />
+      
+      </button>
+
+      {/* Content Wrapper: Ensure visibility on desktop, handle mobile visibility */}
+      <div className={`flex-1 overflow-y-auto ${isSidebarOpen ? 'opacity-100' : 'opacity-0'} sm:opacity-100 transition-opacity duration-300 delay-150`}>
         <SidebarTopButton
           user={user}
+          // Pass isSidebarOpen if SidebarTopButton needs to adapt its internal layout
           setActiveTeamInfo={(activeTeam: Team) => setActiveTeam(activeTeam)}
         />
         <Button
